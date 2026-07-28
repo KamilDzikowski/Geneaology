@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Geneaology</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>Geneaology</h1>
+    </div>
+    <div id="personalDetailsPanel" style="float:left;" class="sidebar">
+            <div id="details-panel-img"></div>
+            <input id="details_first_name" type="text" placeholder="Name (optional)" value="">
+            <input id="details_last_name" type="text" placeholder="Last Name (optional)" value="">
+            <input id="details_birthdate" type="date" placeholder="Birth Date (optional)" value="">
+            <input id="details_deathdate" type="date" placeholder="Death Date (optional)" value="">
+            <input id="details_profession" type="text" placeholder="profession (optional)" value="">
+            <button id="updatePersonBtn" onclick="updatePerson()">Save</button>
+           
+        </div>
+        <div id="MainPanel" class="content">
+             <div id="uploadOverlay" style="display:none;">
+                <div id="uploadModal">
+                    <h2>Upload Preview</h2>
+                    <input type="file" id="PhotoUpload"></input>
+                    <img id="preview"></img>
+                    <div id="uploadActions">
+                        <button onmousedown="photoUpload(photo_personid)">✅ Upload</button>
+                        <button onmousedown="cancelUpload()">❌ Cancel</button>
+                    </div>
+                </div>
+            </div>
+            <div id="OverTopArea" class="TreeSection">
+                <h2>Grandparents</h2>
+                <div id="GrandparentArea" class="cardsArea"></div>
+            </div>
+            <div id="TopArea" class="TreeSection">
+                <h2>Parents <button class="add-btn" onmousedown="addPerson('Parent')">➕</button></h2>
+                <div id="ParentArea" class="cardsArea"></div>
+            </div>
+            <div id="MiddleArea" class="TreeSection">
+                <div style="float:left; width: 180px">
+                    <h2>Active Person</h2>
+                    <div id="ActivePersonArea"></div>
+                </div>
+                <div  style="float:left; width:220px; height:100%;">
+                    <h2>Partner <button class="add-btn" onmousedown="addPerson('Partner')">➕</button></h2>
+                    <div id="PartnerArea"></div>
+                </div>
+                <div style="float:left; width:auto; width:calc(100% - 400px); height:100%;">
+                    <h2>Siblings <button class="add-btn" onmousedown="addPerson('Sibling')">➕</button></h2>
+                    <div id="SiblingsArea" class="cardsArea"></div>
+                </div>
+            </div>
+            <div id="BottomArea" class="TreeSection">
+                <h2>Children <button class="add-btn" onmousedown="addPerson('Child')">➕</button></h2>
+                <div id="ChildArea" class="cardsArea"></div>
+            </div>
+            <div id="UnderBottomArea" class="TreeSection">
+                <h2>Grandchildren</h2>
+                <div id="GrandchildArea" class="cardsArea"></div>
+            </div>
+            
+            
+        </div>
+
+<script>
+    let cropper;
+
+document.getElementById("PhotoUpload").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    const url = URL.createObjectURL(file);
+    const img = document.getElementById("preview");
+    img.src = url;
+    if (cropper) cropper.destroy();
+    cropper = new Cropper(img, {aspectRatio: 1, viewMode: 1});
+});
+async function photoUpload(personid) {
+    const canvas = cropper.getCroppedCanvas({width: 300, height: 300});
+    const blob = await new Promise(resolve => canvas.toBlob(resolve));
+    const formData = new FormData();
+    formData.append("photos", blob, "cropped.jpg");
+    formData.append("personid", personid);
+    await fetch("/photoupload", {method: "POST", body: formData});
+    cropper.destroy();
+    cropper = null;
+    document.getElementById("preview").src = "";
+    document.getElementById("PhotoUpload").value = "";
+    document.getElementById("uploadOverlay").style.display = "none";
+    displayPeople();
+}
+function cancelUpload() {
+    if (cropper) cropper.destroy();
+    cropper = null;
+    document.getElementById("preview").src = "";
+    document.getElementById("PhotoUpload").value = "";
+    document.getElementById("uploadOverlay").style.display = "none";
+}
+async function addPerson(relationtype) {
+    const res = await fetch(`/createPerson`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ relatedId: active_person_id, 
+            relation_type: relationtype
+        })
+    });
+    if (!res.ok) {
+         if (res.status === 409) {
+            if (relationtype == "Parent"){
+                alert("This person already has two parents");
+            } else if (relationtype == "Partner") {
+                alert("This person already has a partner");
+            }
+        } else {
+            alert("Something went wrong");
+        }
+    }
+    displayPeople();
+}
+async function updatePerson() {
+    console.log(document.getElementById("details_first_name").value.trim());
+    await fetch(`/updatePerson/${active_person_id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: active_person_id, 
+            first_name: document.getElementById("details_first_name").value.trim(), 
+            last_name: document.getElementById("details_last_name").value.trim(), 
+            birthdate: document.getElementById("details_birthdate").value.trim(), 
+            deathdate: document.getElementById("details_deathdate").value.trim(),
+            profession: document.getElementById("details_profession").value.trim()
+        })
+    });
+    displayPeople();
+}
+async function displayPeople() {
+    const grid = document.getElementById("gallery");
+    Active_area = document.getElementById("ActivePersonArea");
+    Parent_area = document.getElementById("ParentArea");
+    Grandparent_area = document.getElementById("GrandparentArea");
+    Grandchild_area = document.getElementById("GrandchildArea");
+    Siblings_area = document.getElementById("SiblingsArea");
+    Child_area = document.getElementById("ChildArea");
+    Partner_area = document.getElementById("PartnerArea");
+    Active_area.innerHTML = "";
+    Parent_area.innerHTML = "";
+    Grandparent_area.innerHTML = "";
+    Grandchild_area.innerHTML = "";
+    Siblings_area.innerHTML = "";
+    Child_area.innerHTML = "";
+    Partner_area.innerHTML = "";
+    active_person = await createProfile(active_person_id);
+    const picture = await fetch(`/picture/${active_person_id}`).then(res => res.json());
+    Active_area.appendChild(active_person);
+    active_person.classList.remove("card");
+    active_person.classList.add("card-active");
+    document.getElementById("details-panel-img").innerHTML = `
+        <img src="/Photos/${picture.filename}" class="sidebar-img">
+    `;
+    update_details();
+    people = await fetch(`/relatedpeople/${active_person_id}`).then(res => res.json());
+    people.forEach(async (person) => {
+        profile = await createProfile(person.personId);
+        if (person.relation_type == "Parent") {
+            Parent_area.appendChild(profile);
+        } else if (person.relation_type == "Child") {
+            Child_area.appendChild(profile);
+        } else if (person.relation_type == "Sibling") {
+            Siblings_area.appendChild(profile);
+        } else if (person.relation_type == "Partner") {
+            Partner_area.appendChild(profile);
+        }
+    });
+    if (extendedView) {
+        const grandparents = await fetch(`/grandparents/${active_person_id}`).then(res => res.json());
+        grandparents.forEach(async (person) => {
+            profile = await createProfile(person.grandparentId);
+            Grandparent_area.appendChild(profile);
+        });
+        const grandchildren = await fetch(`/grandchildren/${active_person_id}`).then(res => res.json());
+        grandchildren.forEach(async (person) => {
+            profile = await createProfile(person.grandchildId);
+            Grandchild_area.appendChild(profile);
+        });
+    }
+}
+function choosePhoto(personid) {
+    photo_personid = personid;
+    document.getElementById("uploadOverlay").style.display = "flex";
+}
+async function createProfile(personid) {
+    const person = await fetch(`/person/${personid}`).then(res => res.json());
+    const picture = await fetch(`/picture/${personid}`).then(res => res.json());
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+    <div class="card-img-wrapper">
+        <img src="/Photos/${picture.filename}">
+        <button class="delete-btn" onmousedown="deletePerson(${personid})">🗑️</button>
+        <button class="photo-btn" onmousedown="choosePhoto(${personid})">📷</button>
+    </div>
+    <h3>
+        ${person.first_name} <br/> 
+        ${person.last_name}
+    </h3>
+    <h4>
+        ${person.birthdate ? new Date(person.birthdate).getFullYear() : ""} 
+        ${person.birthdate && person.deathdate ? " - " : ""} 
+        ${person.deathdate ? new Date(person.deathdate).getFullYear() : ""} <br/>
+        ${person.profession ? person.profession : ""}
+    </h4>
+    `;
+    card.addEventListener("click", (e) => {
+        if (e.detail === 1) {
+            clickTimer = setTimeout(() => {
+            SwitchActivePerson(person.id);
+            }, 250);
+        }
+
+        if (e.detail === 2) {
+            clearTimeout(clickTimer);
+            openPerson(person.id);
+        }
+    });
+    return card;
+}
+function SwitchActivePerson(personid) {
+    active_person_id = personid;
+    displayPeople();
+}
+async function update_details() {
+    const person = await fetch(`/person/${active_person_id}`).then(res => res.json());
+    document.getElementById("details_first_name").value = person.first_name;
+    document.getElementById("details_last_name").value = person.last_name;
+    document.getElementById("details_birthdate").value = formatDate(person.birthdate);
+    document.getElementById("details_deathdate").value = formatDate(person.deathdate);
+    document.getElementById("details_profession").value = person.profession;
+}
+function deletePerson(personid) {
+    if (personid == 1) {
+        alert("This is you. It cannot be deleted.");
+        return;
+    }
+    key_node = fetch(`/keynode/${personid}`).then(res => res.json()).isKeyNode;
+    console.log(key_node);
+    if (key_node) {
+        alert("This person is a key node. Please remove their children first.");
+        return;
+    }
+    if (confirm("Are you sure you want to delete this person? This action cannot be undone.")) {
+        fetch(`/deletePerson/${personid}`, { method: "DELETE" })
+        .then(res => {
+            if (res.ok) {
+                if (personid == active_person_id) {
+                    active_person_id = 1;
+                }
+                displayPeople();
+            } else {
+                alert("Something went wrong");
+            }
+        });
+    }
+}
+function formatDate(date) {
+  if (!date) return '';
+  return new Date(date).toISOString().split('T')[0];
+}
+active_person_id = 1;
+extendedView = true;
+displayPeople();
+</script>
+
+</body>
+</html>

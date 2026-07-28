@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Photo Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>📸 Photo Manager</h1>
+    </div>
+    <div id="SectionsPanel" class="sidebar">
+        Sidebar
+    </div>
+    <div id="MainPanel" class="content">
+                    <div id="OverTopArea" class="TreeSection">
+                <h2>Grandparents</h2>
+                <div id="GrandparentArea" style="display: grid; grid-template-columns: repeat(auto-fill, 160px); gap: 10px;"><div class="card">
+    <div class="card-img-wrapper">
+        <img src="/Photos/1778007531316-cropped.jpg">
+        <button class="delete-btn" onmousedown="deletePerson(42)">🗑️</button>
+        <button class="photo-btn" onmousedown="choosePhoto(42)">📷</button>
+    </div>
+    <h3>
+        Ryszard <br> 
+        Pietrzyk <br> 
+        1937 
+         
+         <br>
+    </h3>
+    </div><div class="card">
+    <div class="card-img-wrapper">
+        <img src="/Photos/1778007552697-cropped.jpg">
+        <button class="delete-btn" onmousedown="deletePerson(43)">🗑️</button>
+        <button class="photo-btn" onmousedown="choosePhoto(43)">📷</button>
+    </div>
+    <h3>
+        Irena <br> 
+        Pietrzyk <br> 
+        1941 
+         -  
+        2024 <br>
+    </h3>
+    </div><div class="card">
+    <div class="card-img-wrapper">
+        <img src="/Photos/1778242763990-cropped.jpg">
+        <button class="delete-btn" onmousedown="deletePerson(107)">🗑️</button>
+        <button class="photo-btn" onmousedown="choosePhoto(107)">📷</button>
+    </div>
+    <h3>
+        Mieczyslaw <br> 
+        Dzikowski <br> 
+        1942 
+         
+         <br>
+    </h3>
+    </div><div class="card">
+    <div class="card-img-wrapper">
+        <img src="/Photos/1778242718330-cropped.jpg">
+        <button class="delete-btn" onmousedown="deletePerson(108)">🗑️</button>
+        <button class="photo-btn" onmousedown="choosePhoto(108)">📷</button>
+    </div>
+    <h3>
+        Monika <br> 
+        Dzikowska <br> 
+        1942 
+         
+         <br>
+    </h3>
+    </div></div>
+            </div>
+            <div id="TopArea" class="TreeSection">
+                <h2>Parents <button class="add-btn" onmousedown="addPerson('Parent')">➕</button></h2>
+                <div id="ParentArea" style="display: grid; grid-template-columns: repeat(auto-fill, 160px); gap: 10px;"><div class="card">
+    <div class="card-img-wrapper">
+        <img src="/Photos/1778006952039-cropped.jpg">
+        <button class="delete-btn" onmousedown="deletePerson(2)">🗑️</button>
+        <button class="photo-btn" onmousedown="choosePhoto(2)">📷</button>
+    </div>
+    <h3>
+        Dorota <br> 
+        Dzikowska <br> 
+        1968 
+         
+         <br>
+    </h3>
+    </div><div class="card">
+    <div class="card-img-wrapper">
+        <img src="/Photos/1778006969534-cropped.jpg">
+        <button class="delete-btn" onmousedown="deletePerson(3)">🗑️</button>
+        <button class="photo-btn" onmousedown="choosePhoto(3)">📷</button>
+    </div>
+    <h3>
+        Jacek <br> 
+        Dzikowski <br> 
+        1967 
+         
+         <br>
+    </h3>
+    </div></div>
+            </div>
+            <div id="MiddleArea" class="TreeSection">
+                <div style="float:left; width: 180px">
+                    <h2>Active Person</h2>
+                    <div id="ActivePersonArea"><div class="card-active">
+    <div class="card-img-wrapper">
+        <img src="/Photos/1776596200777-cropped.jpg">
+        <button class="delete-btn" onmousedown="deletePerson(1)">🗑️</button>
+        <button class="photo-btn" onmousedown="choosePhoto(1)">📷</button>
+    </div>
+    <h3>
+        Kamil <br> 
+        Dzikowski <br> 
+        1994 
+         
+         <br>
+    </h3>
+    </div></div>
+                </div>
+                <div style="float:left; width:220px; height:100%;">
+                    <h2>Partner <button class="add-btn" onmousedown="addPerson('Partner')">➕</button></h2>
+                    <div id="PartnerArea"><div class="card">
+    <div class="card-img-wrapper">
+        <img src="/Photos/1778277621163-cropped.jpg">
+        <button class="delete-btn" onmousedown="deletePerson(36)">🗑️</button>
+        <button class="photo-btn" onmousedown="choosePhoto(36)">📷</button>
+    </div>
+    <h3>
+        Yi <br> 
+        Zhuo <br> 
+        1997 
+         
+         <br>
+    </h3>
+    </div></div>
+                </div>
+                <div style="float:left; width:auto; width:calc(100% - 400px); height:100%;">
+                    <h2>Siblings <button class="add-btn" onmousedown="addPerson('Sibling')">➕</button></h2>
+                    <div id="SiblingsArea" style="display: grid; grid-template-columns: repeat(auto-fill, 160px); gap: 10px;"><div class="card">
+    <div class="card-img-wrapper">
+        <img src="/Photos/1776596437026-cropped.jpg">
+        <button class="delete-btn" onmousedown="deletePerson(6)">🗑️</button>
+        <button class="photo-btn" onmousedown="choosePhoto(6)">📷</button>
+    </div>
+    <h3>
+        Grzegorz <br> 
+        Dzikowski <br> 
+        1997 
+         
+         <br>
+    </h3>
+    </div><div class="card">
+    <div class="card-img-wrapper">
+        <img src="/Photos/1776631810907-cropped.jpg">
+        <button class="delete-btn" onmousedown="deletePerson(12)">🗑️</button>
+        <button class="photo-btn" onmousedown="choosePhoto(12)">📷</button>
+    </div>
+    <h3>
+        Szymon <br> 
+        Dzikowski <br> 
+        1999 
+         
+         <br>
+    </h3>
+    </div></div>
+                </div>
+            </div>
+            <div id="BottomArea" class="TreeSection">
+                <h2>Children <button class="add-btn" onmousedown="addPerson('Child')">➕</button></h2>
+                <div id="ChildArea" style="display: grid; grid-template-columns:  repeat(auto-fill, 160px); gap: 10px;"></div>
+            </div>
+            <div id="UnderBottomArea" class="TreeSection">
+                <h2>Grandchildren</h2>
+                <div id="GrandchildArea" style="display: grid; grid-template-columns: repeat(auto-fill, 160px); gap: 10px;"></div>
+            </div>
+ 
+    </div>
+</body>
+        
