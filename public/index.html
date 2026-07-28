@@ -156,7 +156,7 @@ async function displayPeople() {
     active_person.classList.remove("card");
     active_person.classList.add("card-active");
     document.getElementById("details-panel-img").innerHTML = `
-        <img src="/Photos/${picture.filename}" class="sidebar-img">
+        <img src="/${picture.filename ? "Photos" : "Content"}/${picture.filename || "ghost.png"}" class="sidebar-img">
     `;
     update_details();
     people = await fetch(`/relatedpeople/${active_person_id}`).then(res => res.json());
@@ -196,7 +196,7 @@ async function createProfile(personid) {
     card.className = "card";
     card.innerHTML = `
     <div class="card-img-wrapper">
-        <img src="/Photos/${picture.filename}">
+        <img src="/${picture.filename ? "Photos" : "Content"}/${picture.filename || "ghost.png"}" class="card-img">
         <button class="delete-btn" onmousedown="deletePerson(${personid})">🗑️</button>
         <button class="photo-btn" onmousedown="choosePhoto(${personid})">📷</button>
     </div>

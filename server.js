@@ -11,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 app.use("/Photos", express.static("Photos"));
+app.use("/Content", express.static("Content"));
 
 if (!fs.existsSync("Photos")) {
     fs.mkdirSync("Photos");
@@ -233,7 +234,7 @@ app.get("/picture/:id", (req, res) => {
     if (!picture) {
         picture = {
             id: 0,
-            filename: "ghost.png",
+            filename: null,
             description: null,
             personid: null,
             fileHash: null
